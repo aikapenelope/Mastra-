@@ -23,7 +23,7 @@ export const globalWorkspace = new Workspace({
   sandbox: new LocalSandbox({
     workingDirectory: WORKSPACE_DIR,
   }),
-  skills: ['/skills'],
+  skills: ['skills'],
   bm25: true,
-  autoIndexPaths: ['/docs', '/skills'],
+  autoIndexPaths: ['docs', 'skills'],
 });
