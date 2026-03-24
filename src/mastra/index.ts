@@ -4,6 +4,7 @@ import { Memory } from '@mastra/memory';
 import { PostgresStore } from '@mastra/pg';
 import { PgVector } from '@mastra/pg';
 import { PinoLogger } from '@mastra/loggers';
+import { Observability, DefaultExporter } from '@mastra/observability';
 
 import { brainOrchestrator } from './agents/brain-orchestrator.js';
 import { codeAgent } from './agents/code-agent.js';
@@ -73,6 +74,23 @@ const brainMemory = new Memory({
 // Mastra Instance
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Observability: traces stored in PostgreSQL via DefaultExporter
+// ---------------------------------------------------------------------------
+
+const observability = new Observability({
+  configs: {
+    default: {
+      serviceName: 'mastra-brain',
+      exporters: [new DefaultExporter()],
+    },
+  },
+});
+
+// ---------------------------------------------------------------------------
+// Mastra Instance
+// ---------------------------------------------------------------------------
+
 export const mastra = new Mastra({
   agents: {
     brain: brainOrchestrator,
@@ -87,5 +105,6 @@ export const mastra = new Mastra({
   memory: {
     brainMemory,
   },
+  observability,
   logger,
 });
