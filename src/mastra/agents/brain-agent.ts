@@ -91,6 +91,7 @@ Available tool categories:
 - Filesystem tools (prefixed filesystem_): read, write, and list files on the server.
 - Fetch tools (prefixed fetch_): read and extract content from any URL.
 - Brave Search tools (prefixed brave-search_): web search for current information (if available).
+- Playwright tools (prefixed playwright_): browser automation - navigate to URLs, click elements, fill forms, extract data, take screenshots. Use these when you need to interact with web pages, scrape dynamic content, or automate web tasks.
 
 Guidelines:
 - Always be concise and direct. Avoid unnecessary verbosity.

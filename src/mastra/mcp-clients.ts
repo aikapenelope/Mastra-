@@ -51,5 +51,11 @@ export const mcpClient = new MCPClient({
       args: ['-y', '@modelcontextprotocol/server-fetch'],
       timeout: 30000,
     },
+    // Playwright: browser automation (navigate, click, fill, extract, screenshot)
+    playwright: {
+      command: 'npx',
+      args: ['-y', '@playwright/mcp@latest', '--headless'],
+      timeout: 60000,
+    },
   },
 });
