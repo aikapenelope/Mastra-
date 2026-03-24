@@ -10,6 +10,8 @@ import { brainOrchestrator } from './agents/brain-orchestrator.js';
 import { codeAgent } from './agents/code-agent.js';
 import { researchAgent } from './agents/research-agent.js';
 import { knowledgeAgent } from './agents/knowledge-agent.js';
+import { globalWorkspace } from './workspace.js';
+import { deepResearchWorkflow } from './workflows/deep-research.js';
 
 // ---------------------------------------------------------------------------
 // Storage: PostgreSQL for threads, memory, workflows, traces
@@ -71,10 +73,6 @@ const brainMemory = new Memory({
 });
 
 // ---------------------------------------------------------------------------
-// Mastra Instance
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
 // Observability: traces stored in PostgreSQL via DefaultExporter
 // ---------------------------------------------------------------------------
 
@@ -98,6 +96,9 @@ export const mastra = new Mastra({
     researchAgent,
     knowledgeAgent,
   },
+  workflows: {
+    deepResearch: deepResearchWorkflow,
+  },
   storage,
   vectors: {
     pgVector,
@@ -105,6 +106,16 @@ export const mastra = new Mastra({
   memory: {
     brainMemory,
   },
+  workspace: globalWorkspace,
   observability,
   logger,
+  server: {
+    host: process.env.MASTRA_HOST ?? '0.0.0.0',
+    port: Number(process.env.PORT) || 4111,
+    cors: {
+      origin: '*',
+      allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    },
+  },
 });
