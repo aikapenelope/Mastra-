@@ -52,10 +52,12 @@ export const mcpClient = new MCPClient({
       timeout: 30000,
     },
     // Playwright: browser automation (navigate, click, fill, extract, screenshot)
-    playwright: {
-      command: 'npx',
-      args: ['-y', '@playwright/mcp@latest', '--headless'],
-      timeout: 60000,
-    },
+    // DISABLED: JSON Schema draft 2020-12 incompatibility with Mastra's draft-07 validation.
+    // Re-enable when @playwright/mcp updates schema format or Mastra adds 2020-12 support.
+    // playwright: {
+    //   command: 'npx',
+    //   args: ['-y', '@playwright/mcp@latest', '--headless'],
+    //   timeout: 60000,
+    // },
   },
 });
