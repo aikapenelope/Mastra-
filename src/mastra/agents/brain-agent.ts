@@ -102,7 +102,7 @@ Guidelines:
 - When the user asks you to remember or save something long-term, use the ingest-knowledge tool.
 - When the user asks about previously saved information, use query-knowledge first.
 - When the user shares a URL, use fetch tools to read it, then offer to store key points.`,
-  model: 'anthropic/claude-haiku-4.5',
+  model: 'openrouter/openai/gpt-4o-mini',
   memory,
   tools: {
     ...mcpTools,
