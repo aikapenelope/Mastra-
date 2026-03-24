@@ -13,7 +13,12 @@ const vectorStore = new PgVector({
   connectionString: process.env.DATABASE_URL!,
 });
 
-const embedder = new ModelRouterEmbeddingModel('openrouter/openai/text-embedding-3-small');
+const embedder = new ModelRouterEmbeddingModel({
+  providerId: 'openrouter',
+  modelId: 'openai/text-embedding-3-small',
+  url: 'https://openrouter.ai/api/v1',
+  apiKey: process.env.OPENROUTER_API_KEY ?? process.env.OPENAI_API_KEY,
+});
 
 const KNOWLEDGE_INDEX = 'knowledge-base';
 const EMBEDDING_DIMENSION = 1536;

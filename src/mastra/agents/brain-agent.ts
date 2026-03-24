@@ -28,7 +28,12 @@ const memoryVectors = new PgVector({
 const memory = new Memory({
   storage: memoryStorage,
   vector: memoryVectors,
-  embedder: new ModelRouterEmbeddingModel('openrouter/openai/text-embedding-3-small'),
+  embedder: new ModelRouterEmbeddingModel({
+    providerId: 'openrouter',
+    modelId: 'openai/text-embedding-3-small',
+    url: 'https://openrouter.ai/api/v1',
+    apiKey: process.env.OPENROUTER_API_KEY ?? process.env.OPENAI_API_KEY,
+  }),
   options: {
     // Compress old messages into observations to prevent context overflow
     observationalMemory: true,
