@@ -3,7 +3,10 @@ import { PostgresStore } from '@mastra/pg';
 import { PgVector } from '@mastra/pg';
 import { PinoLogger } from '@mastra/loggers';
 
-import { brainAgent } from './agents/brain-agent.js';
+import { brainOrchestrator } from './agents/brain-orchestrator.js';
+import { codeAgent } from './agents/code-agent.js';
+import { researchAgent } from './agents/research-agent.js';
+import { knowledgeAgent } from './agents/knowledge-agent.js';
 
 // ---------------------------------------------------------------------------
 // Storage: PostgreSQL for threads, memory, workflows, traces
@@ -34,11 +37,20 @@ const logger = new PinoLogger({
 
 // ---------------------------------------------------------------------------
 // Mastra Instance
+//
+// Agents registered:
+//   - brain: Supervisor orchestrator (routes to specialists)
+//   - code-agent: Programming, GitHub, code review
+//   - research-agent: Web search, URL reading, deep analysis
+//   - knowledge-agent: Memory, knowledge base, file management
 // ---------------------------------------------------------------------------
 
 export const mastra = new Mastra({
   agents: {
-    brainAgent,
+    brain: brainOrchestrator,
+    codeAgent,
+    researchAgent,
+    knowledgeAgent,
   },
   storage,
   vectors: {
