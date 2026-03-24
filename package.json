@@ -1,0 +1,33 @@
+{
+  "name": "mastra-second-brain",
+  "version": "1.0.0",
+  "description": "Mastra AI second-brain knowledge manager",
+  "main": "index.js",
+  "scripts": {
+    "dev": "mastra dev",
+    "build": "mastra build",
+    "build:studio": "mastra build --studio",
+    "start": "mastra start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "@mastra/core": "^1.15.0",
+    "@mastra/loggers": "^1.0.0",
+    "@mastra/mcp": "^1.0.0",
+    "@mastra/memory": "^1.9.0",
+    "@mastra/pg": "^1.0.0",
+    "@mastra/rag": "^2.1.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "mastra": "^1.3.14",
+    "typescript": "^6.0.2"
+  }
+}
