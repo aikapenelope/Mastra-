@@ -1,9 +1,11 @@
 import { Agent } from '@mastra/core/agent';
+import { ModelRouterEmbeddingModel } from '@mastra/core/llm';
 import { Memory } from '@mastra/memory';
 import { PostgresStore } from '@mastra/pg';
 import { PgVector } from '@mastra/pg';
 
 import { mcpClient } from '../mcp-clients.js';
+import { ingestKnowledgeTool, queryKnowledgeTool } from '../tools/rag-tools.js';
 
 // ---------------------------------------------------------------------------
 // Memory: Full stack for knowledge management
@@ -26,6 +28,12 @@ const memoryVectors = new PgVector({
 const memory = new Memory({
   storage: memoryStorage,
   vector: memoryVectors,
+  embedder: new ModelRouterEmbeddingModel({
+    providerId: 'openrouter',
+    modelId: 'openai/text-embedding-3-small',
+    url: 'https://openrouter.ai/api/v1',
+    apiKey: process.env.OPENROUTER_API_KEY ?? process.env.OPENAI_API_KEY,
+  }),
   options: {
     // Compress old messages into observations to prevent context overflow
     observationalMemory: true,
@@ -53,8 +61,12 @@ const memory = new Memory({
  * - Default: gpt-4o-mini (fast, cheap, good enough for most tasks)
  * - Can be switched to haiku 4.5 or gpt-5-mini via requestContext for
  *   specific use cases (code analysis, deep reasoning)
+ *
+ * Tools:
+ * - MCP: GitHub, filesystem, Brave Search (if key set), Fetch (URL reader)
+ * - RAG: ingest-knowledge (store docs), query-knowledge (search knowledge base)
  */
-// Load MCP tools (GitHub, filesystem) at startup
+// Load MCP tools at startup
 const mcpTools = await mcpClient.listTools();
 
 export const brainAgent = new Agent({
@@ -69,11 +81,17 @@ Your role is to help the user:
 - Recall relevant information from past conversations using your memory.
 - Connect related concepts and surface insights the user might have forgotten.
 - Summarize, categorize, and structure information when asked.
-- Search through files and repositories using your GitHub and filesystem tools.
+- Search through files, repositories, and the web using your tools.
+- Store important information in the knowledge base for long-term retrieval.
 
 Available tool categories:
+- ingest-knowledge: Store text content in the knowledge base for later retrieval.
+- query-knowledge: Search the knowledge base for previously stored information.
 - GitHub tools (prefixed github_): search repos, read files, create issues, etc.
 - Filesystem tools (prefixed filesystem_): read, write, and list files on the server.
+- Fetch tools (prefixed fetch_): read and extract content from any URL.
+- Brave Search tools (prefixed brave-search_): web search for current information (if available).
+- Playwright tools: COMING SOON - browser automation (currently disabled due to schema compatibility).
 
 Guidelines:
 - Always be concise and direct. Avoid unnecessary verbosity.
@@ -82,8 +100,14 @@ Guidelines:
 - Proactively suggest connections between new information and things you already know.
 - Respond in the same language the user writes in.
 - Use your working memory to remember the user's name, preferences, and ongoing projects.
-- When the user shares new knowledge, acknowledge it and note how it connects to existing knowledge.`,
-  model: 'openai/gpt-4o-mini',
+- When the user asks you to remember or save something long-term, use the ingest-knowledge tool.
+- When the user asks about previously saved information, use query-knowledge first.
+- When the user shares a URL, use fetch tools to read it, then offer to store key points.`,
+  model: 'openrouter/openai/gpt-4o-mini',
   memory,
-  tools: mcpTools,
+  tools: {
+    ...mcpTools,
+    'ingest-knowledge': ingestKnowledgeTool,
+    'query-knowledge': queryKnowledgeTool,
+  },
 });
