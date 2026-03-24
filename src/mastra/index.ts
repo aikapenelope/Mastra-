@@ -1,4 +1,6 @@
 import { Mastra } from '@mastra/core/mastra';
+import { ModelRouterEmbeddingModel } from '@mastra/core/llm';
+import { Memory } from '@mastra/memory';
 import { PostgresStore } from '@mastra/pg';
 import { PgVector } from '@mastra/pg';
 import { PinoLogger } from '@mastra/loggers';
@@ -36,13 +38,39 @@ const logger = new PinoLogger({
 });
 
 // ---------------------------------------------------------------------------
+// Instance-level Memory: registered here so Studio detects it
+// ---------------------------------------------------------------------------
+
+const brainMemory = new Memory({
+  storage: new PostgresStore({
+    id: 'brain-memory-storage',
+    connectionString: process.env.DATABASE_URL!,
+  }),
+  vector: new PgVector({
+    id: 'brain-memory-vectors',
+    connectionString: process.env.DATABASE_URL!,
+  }),
+  embedder: new ModelRouterEmbeddingModel({
+    providerId: 'openrouter',
+    modelId: 'openai/text-embedding-3-small',
+    url: 'https://openrouter.ai/api/v1',
+    apiKey: process.env.OPENROUTER_API_KEY ?? process.env.OPENAI_API_KEY,
+  }),
+  options: {
+    observationalMemory: true,
+    semanticRecall: {
+      topK: 5,
+      messageRange: { before: 2, after: 1 },
+    },
+    workingMemory: {
+      enabled: true,
+      scope: 'resource',
+    },
+  },
+});
+
+// ---------------------------------------------------------------------------
 // Mastra Instance
-//
-// Agents registered:
-//   - brain: Supervisor orchestrator (routes to specialists)
-//   - code-agent: Programming, GitHub, code review
-//   - research-agent: Web search, URL reading, deep analysis
-//   - knowledge-agent: Memory, knowledge base, file management
 // ---------------------------------------------------------------------------
 
 export const mastra = new Mastra({
@@ -55,6 +83,9 @@ export const mastra = new Mastra({
   storage,
   vectors: {
     pgVector,
+  },
+  memory: {
+    brainMemory,
   },
   logger,
 });
