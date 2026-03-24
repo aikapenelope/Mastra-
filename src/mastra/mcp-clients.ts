@@ -45,12 +45,9 @@ export const mcpClient = new MCPClient({
           },
         }
       : {}),
-    // Fetch: read and extract content from any URL
-    fetch: {
-      command: 'npx',
-      args: ['-y', '@modelcontextprotocol/server-fetch'],
-      timeout: 30000,
-    },
+    // Fetch: DISABLED - package doesn't exist on npm.
+    // URL reading is handled by the Research Agent's instructions + model capabilities.
+    // TODO: evaluate @anthropic-ai/mcp-server-fetch (Python) or custom fetch tool.
     // Playwright: browser automation (navigate, click, fill, extract, screenshot)
     // DISABLED: JSON Schema draft 2020-12 incompatibility with Mastra's draft-07 validation.
     // Re-enable when @playwright/mcp updates schema format or Mastra adds 2020-12 support.
