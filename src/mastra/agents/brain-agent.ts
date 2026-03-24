@@ -28,7 +28,7 @@ const memoryVectors = new PgVector({
 const memory = new Memory({
   storage: memoryStorage,
   vector: memoryVectors,
-  embedder: new ModelRouterEmbeddingModel('openai/text-embedding-3-small'),
+  embedder: new ModelRouterEmbeddingModel('openrouter/openai/text-embedding-3-small'),
   options: {
     // Compress old messages into observations to prevent context overflow
     observationalMemory: true,
@@ -97,7 +97,7 @@ Guidelines:
 - When the user asks you to remember or save something long-term, use the ingest-knowledge tool.
 - When the user asks about previously saved information, use query-knowledge first.
 - When the user shares a URL, use fetch tools to read it, then offer to store key points.`,
-  model: 'openai/gpt-4o-mini',
+  model: 'anthropic/claude-haiku-4.5',
   memory,
   tools: {
     ...mcpTools,
