@@ -1,4 +1,5 @@
 import { Agent } from '@mastra/core/agent';
+import { ModelRouterEmbeddingModel } from '@mastra/core/llm';
 import { Memory } from '@mastra/memory';
 import { PostgresStore } from '@mastra/pg';
 import { PgVector } from '@mastra/pg';
@@ -26,6 +27,7 @@ const memoryVectors = new PgVector({
 const memory = new Memory({
   storage: memoryStorage,
   vector: memoryVectors,
+  embedder: new ModelRouterEmbeddingModel('openai/text-embedding-3-small'),
   options: {
     // Compress old messages into observations to prevent context overflow
     observationalMemory: true,
