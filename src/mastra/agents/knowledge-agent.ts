@@ -1,47 +1,8 @@
 import { Agent } from '@mastra/core/agent';
-import { ModelRouterEmbeddingModel } from '@mastra/core/llm';
 import { Memory } from '@mastra/memory';
-import { PostgresStore } from '@mastra/pg';
-import { PgVector } from '@mastra/pg';
 
 import { mcpClient } from '../mcp-clients.js';
 import { ingestKnowledgeTool, queryKnowledgeTool } from '../tools/rag-tools.js';
-
-// ---------------------------------------------------------------------------
-// Memory: Full stack for knowledge management
-// ---------------------------------------------------------------------------
-
-const memoryStorage = new PostgresStore({
-  id: 'brain-memory-storage',
-  connectionString: process.env.DATABASE_URL!,
-});
-
-const memoryVectors = new PgVector({
-  id: 'brain-memory-vectors',
-  connectionString: process.env.DATABASE_URL!,
-});
-
-const memory = new Memory({
-  storage: memoryStorage,
-  vector: memoryVectors,
-  embedder: new ModelRouterEmbeddingModel({
-    providerId: 'openrouter',
-    modelId: 'openai/text-embedding-3-small',
-    url: 'https://openrouter.ai/api/v1',
-    apiKey: process.env.OPENROUTER_API_KEY ?? process.env.OPENAI_API_KEY,
-  }),
-  options: {
-    observationalMemory: true,
-    semanticRecall: {
-      topK: 5,
-      messageRange: { before: 2, after: 1 },
-    },
-    workingMemory: {
-      enabled: true,
-      scope: 'resource',
-    },
-  },
-});
 
 // ---------------------------------------------------------------------------
 // Knowledge Agent: Memory + RAG + Filesystem
@@ -55,9 +16,10 @@ const filesystemTools = Object.fromEntries(
 /**
  * Knowledge Agent: Manages the second brain's persistent knowledge.
  *
+ * Memory is configured at the Mastra instance level (brainMemory) and
+ * referenced here by name. This ensures Studio detects it properly.
  * Has full memory stack (observational, semantic recall, working memory)
  * plus RAG tools for the knowledge base and filesystem access.
- * This is the only agent with memory -- others are stateless specialists.
  */
 export const knowledgeAgent = new Agent({
   id: 'knowledge-agent',
@@ -82,7 +44,7 @@ Guidelines:
 - Be concise and direct.
 - Respond in the same language the user writes in.`,
   model: 'openrouter/openai/gpt-4o-mini',
-  memory,
+  memory: new Memory(),
   tools: {
     ...filesystemTools,
     'ingest-knowledge': ingestKnowledgeTool,

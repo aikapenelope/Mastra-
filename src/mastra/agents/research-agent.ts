@@ -14,7 +14,7 @@ import { ingestKnowledgeTool, queryKnowledgeTool } from '../tools/rag-tools.js';
 const mcpTools = await mcpClient.listTools();
 const researchTools = Object.fromEntries(
   Object.entries(mcpTools).filter(
-    ([k]) => k.startsWith('fetch_') || k.startsWith('brave-search_'),
+    ([k]) => k.startsWith('brave-search_'),
   ),
 );
 

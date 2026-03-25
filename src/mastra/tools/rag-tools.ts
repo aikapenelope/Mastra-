@@ -20,7 +20,7 @@ const embedder = new ModelRouterEmbeddingModel({
   apiKey: process.env.OPENROUTER_API_KEY ?? process.env.OPENAI_API_KEY,
 });
 
-const KNOWLEDGE_INDEX = 'knowledge-base';
+const KNOWLEDGE_INDEX = 'knowledge_base';
 const EMBEDDING_DIMENSION = 1536;
 
 // ---------------------------------------------------------------------------
